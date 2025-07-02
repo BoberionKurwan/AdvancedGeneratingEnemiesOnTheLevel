@@ -1,35 +1,26 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SpawnPoint : MonoBehaviour
 {
     [SerializeField] private float _heightOffset = 0.5f;
-    [SerializeField] private float _targetSearchRadius = 10f;
+
+    private Enemy _enemyPrefab;
+    private Target _target;
+
+    public void AssignEnemyPrefab(Enemy prefab) => _enemyPrefab = prefab;
+    public void AssignTarget(Target target) => _target = target;
 
     public Vector3 GetSpawnPosition(float enemyHeight)
     {
         return transform.position + Vector3.up * enemyHeight * _heightOffset;
     }
 
-    public Target GetRandomTarget()
-    {
-        List<Target> targets = FindNearbyTargets();
-        return targets.Count > 0 ? targets[Random.Range(0, targets.Count)] : null;
-    }
+    public Enemy GetEnemy()
+    {        
+        Enemy enemyInstance = Instantiate(_enemyPrefab);
+        enemyInstance.transform.position = GetSpawnPosition(enemyInstance.GetComponent<Collider>().bounds.size.y);
+        enemyInstance.Initialize(_target);
 
-    private List<Target> FindNearbyTargets()
-    {
-        List<Target> nearbyTargets = new List<Target>();
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, _targetSearchRadius);
-
-        foreach (var collider in hitColliders)
-        {
-            if (collider.TryGetComponent(out Target target))
-            {
-                nearbyTargets.Add(target);
-            }
-        }
-
-        return nearbyTargets;
+        return enemyInstance;
     }
 }

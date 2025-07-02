@@ -1,66 +1,44 @@
-using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public class Target : MonoBehaviour
 {
     [SerializeField] private float _movementSpeed = 3f;
-    [SerializeField] private float _waypointSearchRadius = 10f;
 
-    private Transform _currentWaypoint;
-    private List<Transform> _allWaypoints = new List<Transform>();
+    private Waypoint _currentWaypoint;
+    List<Waypoint> _allWaypoints = new List<Waypoint>();
+    private float _distanceToTarget = 0.1f;
+
+    public bool IsTargetReached()
+    {
+        return transform.position.IsEnoughClose(_currentWaypoint.transform.position, _distanceToTarget);
+    }
 
     private void Start()
     {
-        GameObject[] waypointObjects = GameObject.FindGameObjectsWithTag("Waypoint");
-        foreach (GameObject waypoint in waypointObjects)
-        {
-            _allWaypoints.Add(waypoint.transform);
-        }
-
-        SelectRandomWaypoint();
+        _allWaypoints = FindObjectsByType<Waypoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).ToList();
     }
 
     private void Update()
     {
-        if (_currentWaypoint == null) return;
+        if (_currentWaypoint == null)
+            _currentWaypoint = SelectRandomWaypoint();
 
         transform.position = Vector3.MoveTowards(
             transform.position,
-            _currentWaypoint.position,
+            _currentWaypoint.transform.position,
             _movementSpeed * Time.deltaTime);
 
-        if (Vector3.Distance(transform.position, _currentWaypoint.position) < 0.1f)
+        if (IsTargetReached())
         {
-            SelectRandomWaypoint();
+            _currentWaypoint = SelectRandomWaypoint();
         }
     }
 
-    private void SelectRandomWaypoint()
+    private Waypoint SelectRandomWaypoint()
     {
-        if (_allWaypoints.Count == 0) return;
-
-        List<Transform> waypointsInRadius = new List<Transform>();
-        foreach (Transform waypoint in _allWaypoints)
-        {
-            if (Vector3.Distance(transform.position, waypoint.position) <= _waypointSearchRadius)
-            {
-                waypointsInRadius.Add(waypoint);
-            }
-        }
-
-        if (waypointsInRadius.Count == 0)
-        {
-            waypointsInRadius = new List<Transform>(_allWaypoints);
-        }
-
-        if (_currentWaypoint != null && waypointsInRadius.Contains(_currentWaypoint))
-        {
-            waypointsInRadius.Remove(_currentWaypoint);
-        }
-
-        if (waypointsInRadius.Count > 0)
-        {
-            _currentWaypoint = waypointsInRadius[Random.Range(0, waypointsInRadius.Count)];
-        }
+        List<Waypoint> waypoints = _allWaypoints;
+        return waypoints.Count > 0 ? waypoints[Random.Range(0, waypoints.Count)] : null;
     }
 }

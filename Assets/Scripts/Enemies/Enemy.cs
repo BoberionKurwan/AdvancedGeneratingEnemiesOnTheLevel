@@ -4,18 +4,18 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody), typeof(Renderer))]
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] private EnemyMovement _movement;
+    [SerializeField] private EnemyMover _mover;
 
     private Target _target;
 
     public event Action<Enemy> DestroyOnCollision;
 
-    public EnemyMovement Movement => _movement;
+    public EnemyMover Movement => _mover;
 
     public void Initialize(Target target)
     {
         _target = target;
-        _movement.SetTarget(target);
+        _mover.SetTarget(target);
     }
 
     private void OnTriggerEnter(Collider other)
