@@ -5,20 +5,11 @@ using UnityEngine;
 public class Target : MonoBehaviour
 {
     [SerializeField] private float _movementSpeed = 3f;
+    [SerializeField] private List<Waypoint> _waypoints;
+
 
     private Waypoint _currentWaypoint;
-    List<Waypoint> _allWaypoints = new List<Waypoint>();
     private float _distanceToTarget = 0.1f;
-
-    public bool IsTargetReached()
-    {
-        return transform.position.IsEnoughClose(_currentWaypoint.transform.position, _distanceToTarget);
-    }
-
-    private void Start()
-    {
-        _allWaypoints = FindObjectsByType<Waypoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).ToList();
-    }
 
     private void Update()
     {
@@ -36,9 +27,14 @@ public class Target : MonoBehaviour
         }
     }
 
+    public bool IsTargetReached()
+    {
+        return transform.position.IsEnoughClose(_currentWaypoint.transform.position, _distanceToTarget);
+    }
+
     private Waypoint SelectRandomWaypoint()
     {
-        List<Waypoint> waypoints = _allWaypoints;
+        List<Waypoint> waypoints = _waypoints;
         return waypoints.Count > 0 ? waypoints[Random.Range(0, waypoints.Count)] : null;
     }
 }

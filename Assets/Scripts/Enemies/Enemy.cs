@@ -20,7 +20,7 @@ public class Enemy : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<Target>() == _target)
+        if (other.TryGetComponent<Target>(out _))
         {
             DestroyOnCollision?.Invoke(this);
         }

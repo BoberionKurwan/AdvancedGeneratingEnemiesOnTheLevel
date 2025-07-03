@@ -59,13 +59,13 @@ public class Spawner : MonoBehaviour
         foreach (var spawnPoint in _spawnPoints)
         {
             Enemy enemy = spawnPoint.GetEnemy();
-            enemy.DestroyOnCollision += EnemyReachedTarget;
+            enemy.DestroyOnCollision += DestroyEnemyOnCollision;
         }         
     }
 
-    private void EnemyReachedTarget(Enemy enemy)
+    private void DestroyEnemyOnCollision(Enemy enemy)
     {
-        enemy.DestroyOnCollision -= EnemyReachedTarget;
+        enemy.DestroyOnCollision -= DestroyEnemyOnCollision;
         Destroy(enemy.gameObject);
     }
 
