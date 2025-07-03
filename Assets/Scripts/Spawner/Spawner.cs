@@ -7,20 +7,9 @@ public class Spawner : MonoBehaviour
     [SerializeField] private List<Enemy> _enemyPrefabs;
     [SerializeField] private List<Target> _targets;
     [SerializeField] private float _spawnInterval = 2f;
+    [SerializeField] private List<SpawnPoint> _spawnPoints = new List<SpawnPoint>();
 
-    private List<SpawnPoint> _spawnPoints = new List<SpawnPoint>();
     private Coroutine _spawnCoroutine;
-
-    private void Awake()
-    {
-        foreach (Transform child in transform)
-        {
-            if (child.TryGetComponent(out SpawnPoint spawnPoint))
-            {
-                _spawnPoints.Add(spawnPoint);
-            }
-        }
-    }
 
     private void Start()
     {
@@ -35,18 +24,33 @@ public class Spawner : MonoBehaviour
         }
     }
 
+#if UNITY_EDITOR
+    [ContextMenu("Refresh Child Array")]
+    private void RefreshChildArray()
+    {
+        _spawnPoints.Clear();
+        foreach (Transform child in transform)
+        {
+            if (child.TryGetComponent(out SpawnPoint spawnPoint))
+            {
+                _spawnPoints.Add(spawnPoint);
+            }
+        }
+    }
+#endif
+
     private void SpawnEnemies()
     {
         foreach (var spawnPoint in _spawnPoints)
         {
             Enemy enemy = spawnPoint.GetEnemy();
-            enemy.CollisionEntered += DestroyEnemyOnCollision;
-        }         
+            enemy.TargetReached += DestroyEnemyOnTargetReached;
+        }
     }
 
-    private void DestroyEnemyOnCollision(Enemy enemy)
+    private void DestroyEnemyOnTargetReached(Enemy enemy)
     {
-        enemy.CollisionEntered -= DestroyEnemyOnCollision;
+        enemy.TargetReached -= DestroyEnemyOnTargetReached;
         Destroy(enemy.gameObject);
     }
 

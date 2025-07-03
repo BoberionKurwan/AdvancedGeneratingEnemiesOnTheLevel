@@ -15,9 +15,9 @@ public class SpawnPoint : MonoBehaviour
     {        
         Enemy enemyInstance = Instantiate(_enemyPrefab);
 
-        if (enemyInstance.TryGetComponent<Collider>(out Collider collider))
+        if (enemyInstance.TryGetComponent<Collider>(out _))
         {
-            enemyInstance.transform.position = GetSpawnPosition(collider.bounds.size.y);
+            enemyInstance.transform.position = GetSpawnPosition(enemyInstance.GetComponent<Collider>().bounds.size.y);
         }
 
         enemyInstance.Initialize(_target);

@@ -8,7 +8,7 @@ public class Enemy : MonoBehaviour
 
     private Target _target;
 
-    public event Action<Enemy> CollisionEntered;
+    public event Action<Enemy> TargetReached;
 
     public EnemyMover Movement => _mover;
 
@@ -22,7 +22,7 @@ public class Enemy : MonoBehaviour
     {
         if (other.TryGetComponent<Target>(out _))
         {
-            CollisionEntered?.Invoke(this);
+            TargetReached?.Invoke(this);
         }
     }
 }
