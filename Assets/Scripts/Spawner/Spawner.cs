@@ -20,9 +20,6 @@ public class Spawner : MonoBehaviour
                 _spawnPoints.Add(spawnPoint);
             }
         }
-
-        AssignEnemiesToSpawnPoints();
-        AssignTargetsToSpawnPoints();
     }
 
     private void Start()
@@ -38,34 +35,18 @@ public class Spawner : MonoBehaviour
         }
     }
 
-    private void AssignEnemiesToSpawnPoints()
-    {
-        for (int i = 0; i < _spawnPoints.Count; i++)
-        {
-            _spawnPoints[i].AssignEnemyPrefab(_enemyPrefabs[i]);
-        }
-    }
-
-    private void AssignTargetsToSpawnPoints()
-    {
-        for (int i = 0; i < _spawnPoints.Count; i++)
-        {
-            _spawnPoints[i].AssignTarget(_targets[i]);
-        }
-    }
-
     private void SpawnEnemies()
     {
         foreach (var spawnPoint in _spawnPoints)
         {
             Enemy enemy = spawnPoint.GetEnemy();
-            enemy.DestroyOnCollision += DestroyEnemyOnCollision;
+            enemy.CollisionEntered += DestroyEnemyOnCollision;
         }         
     }
 
     private void DestroyEnemyOnCollision(Enemy enemy)
     {
-        enemy.DestroyOnCollision -= DestroyEnemyOnCollision;
+        enemy.CollisionEntered -= DestroyEnemyOnCollision;
         Destroy(enemy.gameObject);
     }
 

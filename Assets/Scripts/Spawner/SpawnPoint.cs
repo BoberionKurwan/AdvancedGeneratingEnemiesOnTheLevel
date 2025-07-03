@@ -3,12 +3,8 @@ using UnityEngine;
 public class SpawnPoint : MonoBehaviour
 {
     [SerializeField] private float _heightOffset = 0.5f;
-
-    private Enemy _enemyPrefab;
-    private Target _target;
-
-    public void AssignEnemyPrefab(Enemy prefab) => _enemyPrefab = prefab;
-    public void AssignTarget(Target target) => _target = target;
+    [SerializeField] private Enemy _enemyPrefab;
+    [SerializeField] private Target _target;
 
     public Vector3 GetSpawnPosition(float enemyHeight)
     {
@@ -18,7 +14,12 @@ public class SpawnPoint : MonoBehaviour
     public Enemy GetEnemy()
     {        
         Enemy enemyInstance = Instantiate(_enemyPrefab);
-        enemyInstance.transform.position = GetSpawnPosition(enemyInstance.GetComponent<Collider>().bounds.size.y);
+
+        if (enemyInstance.TryGetComponent<Collider>(out Collider collider))
+        {
+            enemyInstance.transform.position = GetSpawnPosition(collider.bounds.size.y);
+        }
+
         enemyInstance.Initialize(_target);
 
         return enemyInstance;
